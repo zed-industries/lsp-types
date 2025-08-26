@@ -25,6 +25,7 @@ pub struct WorkspaceFoldersServerCapabilities {
 #[serde(rename_all = "camelCase")]
 pub struct WorkspaceFolder {
     /// The associated URI for this workspace folder.
+    #[serde(with = "crate::lsp_url")]
     pub uri: Url,
     /// The name of the workspace folder. Defaults to the uri's basename.
     pub name: String,

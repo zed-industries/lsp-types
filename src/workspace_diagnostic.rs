@@ -29,6 +29,7 @@ pub struct DiagnosticWorkspaceClientCapabilities {
 #[derive(Debug, Eq, PartialEq, Clone, Deserialize, Serialize)]
 pub struct PreviousResultId {
     /// The URI for which the client knows a result ID.
+    #[serde(with = "crate::lsp_url")]
     pub uri: Url,
 
     /// The value of the previous result ID.
@@ -62,6 +63,7 @@ pub struct WorkspaceDiagnosticParams {
 #[serde(rename_all = "camelCase")]
 pub struct WorkspaceFullDocumentDiagnosticReport {
     /// The URI for which diagnostic information is reported.
+    #[serde(with = "crate::lsp_url")]
     pub uri: Url,
 
     /// The version number for which the diagnostics are reported.
@@ -80,6 +82,7 @@ pub struct WorkspaceFullDocumentDiagnosticReport {
 #[serde(rename_all = "camelCase")]
 pub struct WorkspaceUnchangedDocumentDiagnosticReport {
     /// The URI for which diagnostic information is reported.
+    #[serde(with = "crate::lsp_url")]
     pub uri: Url,
 
     /// The version number for which the diagnostics are reported.

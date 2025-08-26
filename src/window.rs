@@ -139,6 +139,7 @@ pub struct ShowDocumentClientCapabilities {
 #[serde(rename_all = "camelCase")]
 pub struct ShowDocumentParams {
     /// The document uri to show.
+    #[serde(with = "crate::lsp_url")]
     pub uri: Url,
 
     /// Indicates to show the resource in an external program.

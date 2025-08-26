@@ -268,6 +268,7 @@ pub struct Item {
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Document {
+    #[serde(with = "crate::lsp_url")]
     pub uri: Url,
     pub language_id: String,
 }
@@ -300,6 +301,7 @@ pub struct MetaData {
     pub version: String,
 
     /// The project root (in form of an URI) used to compute this dump.
+    #[serde(with = "crate::lsp_url")]
     pub project_root: Url,
 
     /// The string encoding used to compute line and character values in

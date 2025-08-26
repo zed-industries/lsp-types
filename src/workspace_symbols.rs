@@ -94,6 +94,7 @@ pub struct WorkspaceSymbol {
 
 #[derive(Debug, Eq, PartialEq, Clone, Deserialize, Serialize)]
 pub struct WorkspaceLocation {
+    #[serde(with = "crate::lsp_url")]
     pub uri: Url,
 }
 

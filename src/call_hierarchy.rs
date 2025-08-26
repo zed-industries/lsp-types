@@ -63,6 +63,7 @@ pub struct CallHierarchyItem {
     pub detail: Option<String>,
 
     /// The resource identifier of this item.
+    #[serde(with = "crate::lsp_url")]
     pub uri: Url,
 
     /// The range enclosing this symbol not including leading/trailing whitespace but everything else, e.g. comments and code.
