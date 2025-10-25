@@ -643,6 +643,17 @@ pub struct CompletionItem {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub text_edit: Option<CompletionTextEdit>,
 
+    /// The edit text used if the completion item is part of a CompletionList and
+    /// CompletionList defines an item default for the text edit range.
+    /// Clients will only honor this property if they opt into completion list
+    /// item defaults using the capability `completionList.itemDefaults`.
+    /// If not provided and a list's default range is provided the label
+    /// property is used as a text.
+    ///
+    /// @since 3.17.0
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub text_edit_text: Option<String>,
+
     /// An optional array of additional text edits that are applied when
     /// selecting this completion. Edits must not overlap with the main edit
     /// nor with themselves.
