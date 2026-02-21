@@ -550,6 +550,12 @@ pub struct CompletionItem {
     /// Tags for this completion item.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<CompletionItemTag>>,
+
+    /// A score that represents the quality of the completion item.
+    ///
+    /// @since clangd extension
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub score: Option<f64>,
 }
 
 impl CompletionItem {
