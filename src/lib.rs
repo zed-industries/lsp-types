@@ -438,7 +438,7 @@ where
 {
     let opt = Option::<String>::deserialize(deserializer)?;
     match opt {
-        Some(s) if s.is_empty() => Ok(None),
+        Some(s) if s.is_empty() || s == "null" => Ok(None),
         Some(s) => Uri::from_str(&s)
             .map(Some)
             .map_err(serde::de::Error::custom),
@@ -885,7 +885,11 @@ pub struct ConfigurationParams {
 #[serde(rename_all = "camelCase")]
 pub struct ConfigurationItem {
     /// The scope to get the configuration section for.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        deserialize_with = "deserialize_optional_uri",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub scope_uri: Option<Uri>,
 
     ///The configuration section asked for.
@@ -2987,5 +2991,49 @@ mod tests {
             ],
             r#"["create","rename","delete"]"#,
         );
+    }
+
+    #[test]
+    fn configuration_item_deserialization() {
+        // Valid URI parses correctly
+        let item: ConfigurationItem =
+            serde_json::from_str(r#"{"scopeUri": "file:///test.yaml", "section": "yaml"}"#)
+                .unwrap();
+        assert_eq!(
+            item.scope_uri.as_ref().map(|u| u.as_str()),
+            Some("file:///test.yaml")
+        );
+        assert_eq!(item.section, Some("yaml".to_string()));
+
+        // Literal "null" string is treated as None (yaml-language-server sends this)
+        let item: ConfigurationItem =
+            serde_json::from_str(r#"{"scopeUri": "null", "section": "yaml"}"#).unwrap();
+        assert_eq!(item.scope_uri, None);
+
+        // JSON null is treated as None
+        let item: ConfigurationItem =
+            serde_json::from_str(r#"{"scopeUri": null, "section": "yaml"}"#).unwrap();
+        assert_eq!(item.scope_uri, None);
+
+        // Missing scopeUri defaults to None
+        let item: ConfigurationItem = serde_json::from_str(r#"{"section": "yaml"}"#).unwrap();
+        assert_eq!(item.scope_uri, None);
+
+        // Missing section defaults to None
+        let item: ConfigurationItem =
+            serde_json::from_str(r#"{"scopeUri": "file:///test"}"#).unwrap();
+        assert_eq!(item.section, None);
+        assert!(item.scope_uri.is_some());
+
+        // Empty string is treated as None
+        let item: ConfigurationItem =
+            serde_json::from_str(r#"{"scopeUri": "", "section": "yaml"}"#).unwrap();
+        assert_eq!(item.scope_uri, None);
+
+        // Malformed URI still produces an error
+        assert!(serde_json::from_str::<ConfigurationItem>(
+            r#"{"scopeUri": "not a valid uri", "section": "yaml"}"#
+        )
+        .is_err());
     }
 }
